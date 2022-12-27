@@ -5,8 +5,6 @@ import "./App.css";
 
 function App() {
   const [word, setWord] = useState<string>("");
-  const [input, setInput] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [gameState, setGameState] = useState<string>("ongoing");
   const [count, setCount] = useState<number>(0);
   const [errorCount, setErrorCount] = useState<number>(0);
@@ -51,7 +49,6 @@ function App() {
 
   const resetGame = useCallback(async () => {
     await fetchWords();
-    setInput("");
     setCount(0);
     level.current = 1;
     setErrorCount(0);
@@ -62,28 +59,10 @@ function App() {
     setGameState("ongoing");
   }, []);
 
-  const handleChange = (event: any) => {
-    event.preventDefault();
-
-    const value = event.target.value;
-
-    if (value === "" || /^[a-zA-Z]$/.test(value)) {
-      setInput(value);
-      setErrorMessage("");
-    }
-
-    if (inputedChar.includes(value)) {
-      setErrorMessage("You have already tried this character");
-    }
-  };
-
-  const checkWord = async () => {
-    if (!encryptedWord.includes(input) && inputedChar.includes(input)) {
-      setInput("");
-    } else if (!encryptedWord.includes(input) && !inputedChar.includes(input)) {
+  const checkWord = async (char: string) => {
+    if (!encryptedWord.includes(char) && !inputedChar.includes(char)) {
       setErrorCount((errorCount) => errorCount + 1);
-      setInput("");
-      setInputedChar([...inputedChar, input]);
+      setInputedChar([...inputedChar, char]);
     }
 
     if (errorCount === 5) {
@@ -93,15 +72,13 @@ function App() {
 
     for (const [index, str] of encryptedWord.entries()) {
       let indexes = [];
-      if (str.charAt(0) === input && !inputedChar.includes(input)) {
+      if (str.charAt(0) === char && !inputedChar.includes(char)) {
         setCount((count) => count + 1);
         indexes.push(index);
-        indexes.forEach((idx) => (encryptedWordCopy[idx] = input));
-        setInputedChar([...inputedChar, input]);
+        indexes.forEach((idx) => (encryptedWordCopy[idx] = char));
+        setInputedChar([...inputedChar, char]);
       }
     }
-
-    setInput("");
 
     if (count === word.length - 1) {
       await nextLevel();
@@ -138,29 +115,18 @@ function App() {
               ))}
             </h1>
 
-            <div className="inputField">
-              <div className="messageInput">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={handleChange}
-                  className="input"
-                />
-                {errorMessage !== "" ? (
-                  <span style={{ color: "white", fontSize: "8px" }}>
-                    {errorMessage}
-                  </span>
-                ) : (
-                  <span style={{ color: "white", fontSize: "10px" }}></span>
-                )}
-              </div>
-              <button
-                className="btn"
-                onClick={checkWord}
-                disabled={!input || errorMessage !== ""}
-              >
-                Enter
-              </button>
+            <div className="btns">
+              {alphabet.map((char) => (
+                <button
+                  disabled={inputedChar.includes(char)}
+                  onClick={() => checkWord(char)}
+                  className="char_btn"
+                  key={char + "1"}
+                >
+                  {" "}
+                  {char}{" "}
+                </button>
+              ))}
             </div>
           </>
         )}

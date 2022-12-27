@@ -17,7 +17,7 @@
   flex-direction: column;
   gap: 2rem;
   border: 1px solid white;
-  padding: 8rem;
+  padding: 3rem;
 }
 
 .level {
@@ -53,6 +53,30 @@
 
 .btn {
   padding: 0.5rem 1.5rem;
+}
+
+.btns {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-gap: 10px;
+  justify-content: center;
+}
+
+.char_btn {
+  background-color: #eee;
+  border: none;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.char_btn:hover {
+  background-color: rgb(211, 201, 201);
+  color: rgb(7, 138, 214);
+}
+
+.char_btn:disabled {
+  pointer-events: none;
+  background-color: gray;
 }
 
 .nav {
